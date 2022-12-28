@@ -28,22 +28,45 @@ import { useForm } from "react-hook-form";
 // }
 
 // react hook form 으로 간단하게 작성하기
+interface IFormData {
+    errors: {
+        email: {
+            message: string;
+        };
+    };
+    userName?: string;
+    email: string;
+    password?: string;
+}
 function ToDoList() {
-    const { register, watch, handleSubmit, formState } = useForm();
-    const onValid = (data: any) => {
+    const { register, watch, handleSubmit, formState: { errors } } = useForm<IFormData>({
+        defaultValues: {
+            email: '@naver.com',
+        }
+    });
+    const onValid = (data: IFormData) => {
         console.log(data)
     }
-    console.log(formState.errors)
+    console.log(errors)
     return <div>
         <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={handleSubmit(onValid)}>
-            <input {...register("Email", {
-                required: 'Email is required', minLength: {
+            <input {...register("email", {
+                required: '이메일은 필수항목입니다.',
+                minLength: {
                     value: 5,
-                    message: 'Your Email is too short'
-                }
+                    message: '이메일이 너무 짧습니다. '
+                },
+                pattern: {
+                    value: /^[A-Za-z0-9._%+-]+@naver.com$/,
+                    message: '네이버 이메일만 가능합니다. '
+                },
+
             })} placeholder='Email' />
-            <input {...register("userName")} placeholder='Email' />
-            <input {...register("passWord")} placeholder='Email' />
+            <span>
+                {errors?.email?.message}
+            </span>
+            <input {...register("userName")} placeholder='userName' />
+            <input {...register("password")} placeholder='password' />
             <button>추가! </button>
         </form>
     </div>
