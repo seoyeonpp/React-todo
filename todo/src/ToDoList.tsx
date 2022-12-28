@@ -29,11 +29,19 @@ import { useForm } from "react-hook-form";
 
 // react hook form 으로 간단하게 작성하기
 function ToDoList() {
-    const { register, watch } = useForm();
-    console.log(watch())
+    const { register, watch, handleSubmit, formState } = useForm();
+    const onValid = (data: any) => {
+        console.log(data)
+    }
+    console.log(formState.errors)
     return <div>
-        <form>
-            <input {...register("Email")} placeholder='Email' />
+        <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={handleSubmit(onValid)}>
+            <input {...register("Email", {
+                required: 'Email is required', minLength: {
+                    value: 5,
+                    message: 'Your Email is too short'
+                }
+            })} placeholder='Email' />
             <input {...register("userName")} placeholder='Email' />
             <input {...register("passWord")} placeholder='Email' />
             <button>추가! </button>
