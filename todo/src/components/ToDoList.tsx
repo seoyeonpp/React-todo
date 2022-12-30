@@ -1,6 +1,51 @@
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
+import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
+
+interface IForm {
+    toDo: string;
+}
+interface IToDo {
+    text: string;
+    id: number;
+    category: "TODO" | "DOING" | "DONE";
+}
+const toDoState = atom<IToDo[]>({
+    key: "toDo",
+    default: [],
+})
+
+function ToDoList() {
+    const [toDos, setToDos] = useRecoilState(toDoState);
+    // const value = useRecoilValue(toDoState);
+    // const modFn = useSetRecoilState(toDoState);
+    const { register, handleSubmit, setValue } = useForm<IForm>();
+    const onSubmit = ({ toDo }: IForm) => {
+        setToDos((oldToDos) => [{ text: toDo, id: Date.now(), category: "TODO" }, ...oldToDos]);
+        setValue("toDo", "");
+    }
+    return (
+        <div>
+            <h1>투두리스트</h1>
+            <hr />
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <input
+                    {...register("toDo", {
+                        required: "todo를 입력하세요",
+                    })}
+                    placeholder='할일을 적으세요' />
+                <button>추가! </button>
+            </form>
+            <ul>
+                {toDos.map(toDo => <li key={toDo.id}>{toDo.text}</li>)}
+            </ul>
+        </div>
+    )
+}
+export default ToDoList;
+
+// ***** react-hook-form 을 안쓴다면 이렇게 해야함 *****
 // function ToDoList() {
 //     const [todo, setTodo] = useState("");
 //     const [toDoError, setToDoError] = useState("");
@@ -27,30 +72,6 @@ import { useForm } from "react-hook-form";
 //     </div>
 // }
 
-// ***** 위의 내용을 react-hook-form으로 수정 *****
-interface IForm {
-    toDo: string;
-}
-function ToDoList() {
-    const {
-        register, handleSubmit, setValue
-    } = useForm<IForm>();
-    const onSubmit = (data: IForm) => {
-        console.log('add to do', data.toDo)
-        setValue("toDo", "");
-    }
-    return <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <input
-                {...register("toDo", {
-                    required: "todo를 입력하세요",
-                })}
-                placeholder='할일을 적으세요' />
-            <button>추가! </button>
-        </form>
-    </div>
-}
-export default ToDoList;
 
 // ***** react hook form 으로 회원가입 연습 *****
 // interface IFormData {
