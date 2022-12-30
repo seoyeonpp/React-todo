@@ -34,18 +34,23 @@ interface IFormData {
             message: string;
         };
     };
-    userName?: string;
+    userName: string;
     email: string;
     password?: string;
+    password1?: string;
+    extraError?: string;
 }
 function ToDoList() {
-    const { register, watch, handleSubmit, formState: { errors } } = useForm<IFormData>({
+    const { register, watch, handleSubmit, formState: { errors }, setError } = useForm<IFormData>({
         defaultValues: {
             email: '@naver.com',
         }
     });
     const onValid = (data: IFormData) => {
-        console.log(data)
+        if (data.password !== data.password1) {
+            setError("password1", { message: "비밀번호가 같지 않습니다. " }, { shouldFocus: true })
+        }
+        setError("extraError", { message: "서버 에러" })
     }
     console.log(errors)
     return <div>
@@ -65,9 +70,25 @@ function ToDoList() {
             <span>
                 {errors?.email?.message}
             </span>
-            <input {...register("userName")} placeholder='userName' />
+            <input {...register("userName",
+                {
+                    required: "이름은 필수",
+                    validate: {
+                        noSY: (value) => value.includes("서연") ? "'서연'은 유저네임이 될 수 없습니다. " : true,
+                        noNick: (value) => value.includes("nick") ? "'nick'은 유저네임이 될 수 없습니다. " : true,
+                    }
+                }
+            )} placeholder='userName' />
+            <span>
+                {errors?.userName?.message}
+            </span>
             <input {...register("password")} placeholder='password' />
+            <input {...register("password1")} placeholder='password' />
+            <span>
+                {errors?.password1?.message}
+            </span>
             <button>추가! </button>
+            <span>{errors?.extraError?.message}</span>
         </form>
     </div>
 }
