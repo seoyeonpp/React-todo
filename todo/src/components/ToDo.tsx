@@ -11,9 +11,8 @@ function ToDo({ text, category, id }: IToDo) {
         setToDos((oldToDos) => {
             const targetIndex = oldToDos.findIndex(toDo => toDo.id === id);
             const oldTodo = oldToDos[targetIndex];
-            const newToDo = { text, id, category: name };
-            console.log(oldTodo, newToDo)
-            return oldToDos
+            const newToDo = { text, id, category: name as any }; // as any 는 타입스크립트가 체크하지 않음 (권장하지 않음)
+            return [...oldToDos.slice(0, targetIndex), newToDo, ...oldToDos.slice(targetIndex + 1)]
         })
     }
     return (
