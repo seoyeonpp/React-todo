@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { categoryState, toDoSelector, toDoState } from '../atoms';
+import { Categories, categoryState, toDoSelector, toDoState } from '../atoms';
 import CreateToDo from './CreateToDo';
 import ToDo from './ToDo';
 
@@ -13,17 +13,18 @@ function ToDoList() {
     const toDos = useRecoilValue(toDoSelector)
     const [category, setCategory] = useRecoilState(categoryState);
     const onInput = (event: React.FormEvent<HTMLSelectElement>) => {
-        setCategory(event.currentTarget.value)
+        setCategory(event.currentTarget.value as any)
+        // categories는 3가지 타입인데 그냥 string으로 들어와서 에러가 남 as any 라고 써주면 에러 안남
     }
-    console.log(category);
+    console.log(toDos);
     return (
         <div>
             <h1>투두리스트</h1>
             <hr />
             <select value={category} onInput={onInput}>
-                <option value="TODO">To Do</option>
-                <option value="DOING">Doing</option>
-                <option value="DONE">Done</option>
+                <option value={Categories.TODO}>To Do</option>
+                <option value={Categories.DOING}>Doing</option>
+                <option value={Categories.DONE}>Done</option>
             </select>
             <CreateToDo />
             {toDos?.map((toDo) => <ToDo key={toDo.id} {...toDo} />)}
